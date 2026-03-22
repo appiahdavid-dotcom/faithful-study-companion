@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef } from "react";
 
 // ─── Storage helpers ───────────────────────────────────────────────────────
 const STORAGE_KEY = "faithful_five_ps_entries";

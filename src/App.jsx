@@ -303,21 +303,12 @@ export default function FaithfulStudyCompanion() {
   const handleNext = () => { setStep(s => Math.min(s + 1, FIVE_PS.length - 1)); scrollTop(); };
   const handleBack = () => { setStep(s => Math.max(s - 1, 0)); scrollTop(); };
 
-  const handleSave = async () => {
-    setSaving(true);
-    let finalAi = aiResponses[currentP.key];
-    if (!finalAi && currentP.aiPrompt) {
-      const pFields = {};
-      currentP.fields.forEach(f => { pFields[f.key] = formData[f.key] || ""; });
-      const { system, user } = currentP.aiPrompt(pFields, { passage: formData.passage });
-      finalAi = await askCompanion(system, user);
-      setAiResponses(r => ({ ...r, [currentP.key]: finalAi }));
-    }
-    const entry = { id: Date.now(), date: sessionDate, formData: { ...formData }, aiResponses: { ...aiResponses, [currentP.key]: finalAi } };
+  const handleSave = () => {
+    // Save immediately — no waiting for AI
+    const entry = { id: Date.now(), date: sessionDate, formData: { ...formData }, aiResponses: { ...aiResponses } };
     const updated = [entry, ...entries];
     setEntries(updated);
     save(updated);
-    setSaving(false);
     setFormData({});
     setAiResponses({});
     setStep(0);
@@ -428,7 +419,7 @@ export default function FaithfulStudyCompanion() {
               {step > 0 && <button className="nav-btn nav-btn-back" onClick={handleBack}>← Back</button>}
               {!isLastStep
                 ? <button className="nav-btn nav-btn-next" onClick={handleNext}>Next P →</button>
-                : <button className="nav-btn nav-btn-save" onClick={handleSave} disabled={saving}>{saving ? "Saving…" : "📖 Save to Journal"}</button>
+                : <button className="nav-btn nav-btn-save" onClick={handleSave}>📖 Save to Journal</button>
               }
             </div>
           </>

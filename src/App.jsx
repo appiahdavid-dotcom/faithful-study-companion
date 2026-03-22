@@ -292,12 +292,17 @@ export default function FaithfulStudyCompanion() {
   const getAi = async (p) => {
     if (!p.aiPrompt) return;
     setLoadingAi(l => ({ ...l, [p.key]: true }));
-    const pFields = {};
-    p.fields.forEach(f => { pFields[f.key] = formData[f.key] || ""; });
-    const { system, user } = p.aiPrompt(pFields, { passage: formData.passage });
-    const res = await askCompanion(system, user);
-    setAiResponses(r => ({ ...r, [p.key]: res }));
-    setLoadingAi(l => ({ ...l, [p.key]: false }));
+    try {
+      const pFields = {};
+      p.fields.forEach(f => { pFields[f.key] = formData[f.key] || ""; });
+      const { system, user } = p.aiPrompt(pFields, { passage: formData.passage });
+      const res = await askCompanion(system, user);
+      setAiResponses(r => ({ ...r, [p.key]: res }));
+    } catch (err) {
+      setAiResponses(r => ({ ...r, [p.key]: "Unable to load insight right now. Your study has been saved." }));
+    } finally {
+      setLoadingAi(l => ({ ...l, [p.key]: false }));
+    }
   };
 
   const handleNext = () => { setStep(s => Math.min(s + 1, FIVE_PS.length - 1)); scrollTop(); };
